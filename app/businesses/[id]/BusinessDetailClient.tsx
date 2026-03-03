@@ -26,7 +26,7 @@ export default function BusinessDetailClient({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // 🔹 Cargar reseñas con manejo seguro
+  // 🔹 Cargar reseñas
   useEffect(() => {
     if (!businessId || isNaN(businessId)) return;
 
@@ -34,19 +34,13 @@ export default function BusinessDetailClient({
       try {
         const res = await fetch(`/api/reviews?businessId=${businessId}`);
 
-        if (!res.ok) {
-          throw new Error("Error en API");
-        }
+        if (!res.ok) throw new Error("Error API");
 
         const data = await res.json();
 
-        if (Array.isArray(data)) {
-          setReseñas(data);
-        } else {
-          setReseñas([]);
-        }
+        setReseñas(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Error cargando reseñas:", err);
+        console.error(err);
         setError(true);
       } finally {
         setLoading(false);
@@ -56,7 +50,6 @@ export default function BusinessDetailClient({
     cargarReseñas();
   }, [businessId]);
 
-  // 🔹 Ordenar por más recientes
   const reseñasOrdenadas = useMemo(() => {
     return [...reseñas].sort(
       (a, b) =>
@@ -73,12 +66,11 @@ export default function BusinessDetailClient({
         totalOpiniones
       : 0;
 
-  // 🔹 Guardar reseña
   const agregarReseña = async () => {
     if (!nombre || !comentario) return;
 
     try {
-      const response = await fetch("/api/reviews", {
+      const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -89,12 +81,9 @@ export default function BusinessDetailClient({
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Error guardando reseña");
-      }
+      if (!res.ok) throw new Error("Error guardando");
 
-      const nueva = await response.json();
-
+      const nueva = await res.json();
       setReseñas((prev) => [nueva, ...prev]);
 
       setNombre("");
@@ -108,7 +97,7 @@ export default function BusinessDetailClient({
   return (
     <main className="min-h-screen bg-gray-50 px-6 md:px-10 py-14">
 
-      {/* HEADER NEGOCIO */}
+      {/* HEADER */}
       <div className="max-w-4xl mx-auto bg-white rounded-2xl p-10 shadow-sm border border-gray-100 mb-10">
 
         <h1 className="text-4xl font-semibold text-[#0F172A] mb-6">
@@ -117,10 +106,10 @@ export default function BusinessDetailClient({
 
         <div className="flex items-center gap-4">
           <div className="flex">
-            {[1, 2, 3, 4, 5].map((star) => (
+            {[1,2,3,4,5].map((star) => (
               <span
                 key={star}
-                className={`text-2xl transition-all duration-300 ${
+                className={`text-2xl ${
                   star <= Math.round(promedio)
                     ? "text-[#3F7FD8]"
                     : "text-gray-300"
@@ -131,7 +120,7 @@ export default function BusinessDetailClient({
             ))}
           </div>
 
-          <span className="text-[#3F7FD8] font-semibold text-lg">
+          <span className="text-[#3F7FD8] font-semibold">
             {promedio.toFixed(1)}
           </span>
 
@@ -144,7 +133,7 @@ export default function BusinessDetailClient({
       {/* FORMULARIO */}
       <div className="max-w-4xl mx-auto bg-gradient-to-r from-[#0F172A] to-[#1E293B] rounded-2xl p-10 shadow-xl mb-12">
 
-        <h2 className="text-2xl font-semibold text-white mb-8">
+        <h2 className="text-2xl text-white mb-8">
           Escribir Opinión
         </h2>
 
@@ -155,7 +144,7 @@ export default function BusinessDetailClient({
             placeholder="Nombre completo"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-            className="w-full bg-white rounded-lg px-4 py-3 text-[#0F172A] focus:ring-2 focus:ring-[#3F7FD8]"
+            className="w-full bg-white rounded-lg px-4 py-3"
           />
 
           <textarea
@@ -163,14 +152,12 @@ export default function BusinessDetailClient({
             value={comentario}
             onChange={(e) => setComentario(e.target.value)}
             rows={4}
-            className="w-full bg-white rounded-lg px-4 py-3 text-[#0F172A] focus:ring-2 focus:ring-[#3F7FD8]"
+            className="w-full bg-white rounded-lg px-4 py-3"
           />
 
-          {/* Estrellas */}
           <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => {
+            {[1,2,3,4,5].map((star) => {
               const active = star <= (hoverRating || rating);
-
               return (
                 <button
                   key={star}
@@ -178,10 +165,8 @@ export default function BusinessDetailClient({
                   onClick={() => setRating(star)}
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(0)}
-                  className={`text-3xl transition ${
-                    active
-                      ? "text-[#3F7FD8] scale-110"
-                      : "text-gray-300"
+                  className={`text-3xl ${
+                    active ? "text-[#3F7FD8]" : "text-gray-300"
                   }`}
                 >
                   ★
@@ -192,7 +177,7 @@ export default function BusinessDetailClient({
 
           <button
             onClick={agregarReseña}
-            className="w-full bg-[#3F7FD8] text-white py-3 rounded-md font-medium hover:opacity-90 transition"
+            className="w-full bg-[#3F7FD8] text-white py-3 rounded-md"
           >
             Publicar Opinión
           </button>
@@ -209,56 +194,49 @@ export default function BusinessDetailClient({
           </p>
         )}
 
-        {error && (
-          <p className="text-center text-red-500">
-            Error cargando opiniones.
+        {!loading && !error && totalOpiniones === 0 && (
+          <p className="text-center text-gray-500">
+            Aún no hay opiniones.
           </p>
         )}
 
-        {!loading && !error && totalOpiniones === 0 && (
-          <div className="text-center text-gray-500 py-10">
-            Aún no hay opiniones. Sé el primero en opinar.
-          </div>
-        )}
+        {!loading && reseñasOrdenadas.map((r) => (
+          <div
+            key={r.id}
+            className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm"
+          >
+            <div className="flex justify-between mb-3">
 
-        {!loading && !error &&
-          reseñasOrdenadas.map((reseña) => (
-            <div
-              key={reseña.id}
-              className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm"
-            >
-              <div className="flex justify-between mb-3">
-
-                <div>
-                  <span className="font-medium text-[#0F172A]">
-                    {reseña.usuario}
-                  </span>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {new Date(reseña.createdAt).toLocaleDateString("es-DO")}
-                  </p>
-                </div>
-
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className={`text-lg ${
-                        star <= reseña.calificacion
-                          ? "text-[#3F7FD8]"
-                          : "text-gray-300"
-                      }`}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
+              <div>
+                <span className="font-medium text-[#0F172A]">
+                  {r.usuario}
+                </span>
+                <p className="text-xs text-gray-400">
+                  {new Date(r.createdAt).toLocaleDateString("es-DO")}
+                </p>
               </div>
 
-              <p className="text-gray-600">
-                {reseña.comentario}
-              </p>
+              <div className="flex">
+                {[1,2,3,4,5].map((star) => (
+                  <span
+                    key={star}
+                    className={`text-lg ${
+                      star <= r.calificacion
+                        ? "text-[#3F7FD8]"
+                        : "text-gray-300"
+                    }`}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
             </div>
-          ))}
+
+            <p className="text-gray-600">
+              {r.comentario}
+            </p>
+          </div>
+        ))}
 
       </div>
 
