@@ -1,49 +1,45 @@
 import BusinessCard from "../../components/BusinessCard";
+import { prisma } from "@/lib/prisma";
 
-export default function BusinessesPage() {
-  const negocios = [
-  {
-    id: 1,
-    nombre: "Restaurante El Buen Sabor",
-    categoria: "Restaurante",
-    ciudad: "Santo Domingo",
-    direccion: "Av. Winston Churchill #123",
-    telefono: "+1 809-555-1234",
-    website: "www.elbuensabor.com",
-    calificacion: 4.5,
-  },
-  {
-    id: 2,
-    nombre: "Hospital Central RD",
-    categoria: "Institución Pública",
-    ciudad: "Santiago",
-    direccion: "Calle Principal #45",
-    telefono: "+1 809-555-9876",
-    website: "www.hospitalcentralrd.gob.do",
-    calificacion: 3.8,
-  },
-  {
-    id: 3,
-    nombre: "Auto Servicio Premium",
-    categoria: "Taller Mecánico",
-    ciudad: "Punta Cana",
-    direccion: "Av. Barceló Km 5",
-    telefono: "+1 809-555-4567",
-    website: "www.autoserviciopremium.com",
-    calificacion: 4.2,
-  },
-];
+export default async function BusinessesPage() {
+
+  const negocios = await prisma.business.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   return (
     <main className="min-h-screen bg-gray-50 p-10">
-      <h1 className="text-3xl font-semibold text-[#0F172A] mb-8">
-        Negocios Registrados
-      </h1>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {negocios.map((negocio) => (
-          <BusinessCard key={negocio.id} {...negocio} />
-        ))}
+      <div className="mb-10">
+        <h1 className="text-4xl font-semibold text-[#0F172A] mb-3">
+          Negocios Registrados
+        </h1>
+
+        <p className="text-gray-500">
+          Descubre negocios, restaurantes y servicios evaluados por la comunidad.
+        </p>
       </div>
+
+      {negocios.length === 0 ? (
+        <div className="bg-white rounded-2xl p-10 text-center border border-gray-100">
+          <p className="text-gray-500">
+            No hay negocios registrados todavía.
+          </p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {negocios.map((negocio) => (
+            <BusinessCard
+              key={negocio.id}
+              {...negocio}
+              calificacion={4.5}
+            />
+          ))}
+        </div>
+      )}
+
     </main>
   );
 }
