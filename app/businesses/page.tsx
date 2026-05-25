@@ -4,10 +4,13 @@ import { prisma } from "@/lib/prisma";
 export default async function BusinessesPage() {
 
   const negocios = await prisma.business.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  include: {
+    reviews: true,
+  },
+  orderBy: {
+    createdAt: "desc",
+  },
+});
 
   return (
     <main className="min-h-screen bg-gray-50 p-10">
@@ -31,11 +34,22 @@ export default async function BusinessesPage() {
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {negocios.map((negocio) => (
-            <BusinessCard
-              key={negocio.id}
-              {...negocio}
-              calificacion={4.5}
-            />
+           <BusinessCard
+  key={negocio.id}
+  {...negocio}
+  calificacion={
+    negocio.reviews.length > 0
+      ? Number(
+          (
+            negocio.reviews.reduce(
+              (acc, review) => acc + review.calificacion,
+              0
+            ) / negocio.reviews.length
+          ).toFixed(1)
+        )
+      : 0
+  }
+/>
           ))}
         </div>
       )}
