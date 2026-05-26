@@ -33,7 +33,35 @@ export default function BusinessCard({
 ];
 
 const photoUrl =
-  fallbackImages[id % fallbackImages.length];
+  const categoryImages: Record<string, string> = {
+  Restaurante:
+    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
+
+  Cafetería:
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1200&auto=format&fit=crop",
+
+  Hotel:
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop",
+
+  Barbería:
+    "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=1200&auto=format&fit=crop",
+
+  Salón:
+    "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=1200&auto=format&fit=crop",
+
+  Gym:
+    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&auto=format&fit=crop",
+
+  Farmacia:
+    "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?q=80&w=1200&auto=format&fit=crop",
+
+  Supermercado:
+    "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200&auto=format&fit=crop",
+};
+
+const photoUrl =
+  categoryImages[categoria] ||
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop";
 
   return (
 
