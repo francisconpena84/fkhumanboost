@@ -26,9 +26,14 @@ export default function BusinessCard({
   photoReference,
 }: BusinessCardProps) {
 
-  const photoUrl = photoReference
-    ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference=${photoReference}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-    : "https://placehold.co/600x400?text=FKReview";
+  const fallbackImages = [
+  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1200&auto=format&fit=crop",
+];
+
+const photoUrl =
+  fallbackImages[id % fallbackImages.length];
 
   return (
 

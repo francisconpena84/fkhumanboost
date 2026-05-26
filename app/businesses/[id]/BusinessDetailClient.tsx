@@ -134,7 +134,7 @@ export default function BusinessDetailClient({
   <div className="max-w-5xl mx-auto mb-10 overflow-hidden rounded-3xl shadow-lg">
 
     <img
-  src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photo_reference=${business.photoReference}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+  src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1600&auto=format&fit=crop"
   alt={business.nombre}
   onError={(e) => {
     e.currentTarget.src =
