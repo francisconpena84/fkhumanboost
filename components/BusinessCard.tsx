@@ -56,8 +56,7 @@ const photoUrl =
   categoryImages[categoria] ||
   "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop";
 
-const photoUrl =
-  fallbackImages[id % fallbackImages.length];
+
 
   return (
 
