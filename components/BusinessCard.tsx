@@ -41,10 +41,14 @@ export default function BusinessCard({
       <div className="h-52 overflow-hidden bg-gray-100">
 
         <img
-          src={photoUrl}
-          alt={nombre}
-          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-        />
+  src={photoUrl}
+  alt={nombre}
+  onError={(e) => {
+    e.currentTarget.src =
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop";
+  }}
+  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+/>
 
       </div>
 
