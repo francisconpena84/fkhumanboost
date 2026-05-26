@@ -15,6 +15,7 @@ model Business {
   direccion   String
   telefono    String
   website     String
+  imageUrl    String?
   reviews     Review[]
   createdAt   DateTime @default(now())
 }

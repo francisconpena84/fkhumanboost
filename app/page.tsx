@@ -164,17 +164,18 @@ export default function Home() {
               desc: "Talleres, clínicas, comercios y empresas locales.",
             },
           ].map((cat, index) => (
-            <div
-              key={index}
-              className="bg-white p-10 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition"
-            >
+            <Link
+  key={index}
+  href={`/businesses?categoria=${encodeURIComponent(cat.title)}`}
+  className="bg-white p-10 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition block"
+>
               <h3 className="text-2xl font-semibold text-[#0F172A] mb-4">
                 {cat.title}
               </h3>
               <p className="text-gray-600">
                 {cat.desc}
               </p>
-            </div>
+            </Link>
           ))}
 
         </div>
