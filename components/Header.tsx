@@ -28,9 +28,7 @@ export default function Header() {
             Negocios
           </Link>
 
-          <Link href="#" className="hover:text-[#3F7FD8] transition">
-            Categorías
-          </Link>
+        
 
           <button className="bg-[#3F7FD8] text-white px-5 py-2 rounded-md hover:opacity-90 transition">
             Iniciar Sesión

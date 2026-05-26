@@ -7,61 +7,85 @@ export async function GET() {
 
     const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
-    const query =
-      "restaurants in Santo Domingo Dominican Republic";
-
-    const url =
-      `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${apiKey}`;
-
-    const response = await fetch(url);
-
-    const data = await response.json();
-
-    if (!data.results) {
-      return NextResponse.json(
-        { error: "No businesses found" },
-        { status: 400 }
-      );
-    }
+    const queries = [
+      "restaurants in Santo Domingo Dominican Republic",
+      "hotels in Santo Domingo Dominican Republic",
+      "gyms in Santo Domingo Dominican Republic",
+      "pharmacies in Santo Domingo Dominican Republic",
+      "cafes in Santo Domingo Dominican Republic",
+    ];
 
     let imported = 0;
 
-    for (const place of data.results) {
+    for (const query of queries) {
 
-      const existe = await prisma.business.findFirst({
-        where: {
-          nombre: place.name,
-        },
-      });
+      const url =
+        `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${apiKey}`;
 
-      if (!existe) {
+      const response = await fetch(url);
 
-        await prisma.business.create({
-          data: {
+      const data = await response.json();
+
+      if (!data.results) continue;
+
+      for (const place of data.results) {
+
+        const existe = await prisma.business.findFirst({
+          where: {
             nombre: place.name,
-            categoria: "Restaurante",
-            ciudad: "Santo Domingo",
-            direccion: place.formatted_address || "",
-            telefono: "",
-            website: "",
-            googleRating: place.rating || 0,
-            googleReviews: place.user_ratings_total || 0,
-            googlePlaceId: place.place_id || "",
-            photoReference:
-              place.photos?.[0]?.photo_reference ||
-              place.photos?.[0]?.name ||
-              "",
           },
         });
 
-        imported++;
+        if (!existe) {
+
+          await prisma.business.create({
+            data: {
+
+              nombre: place.name,
+
+              categoria:
+                place.types?.includes("restaurant")
+                  ? "Restaurante"
+                  : place.types?.includes("cafe")
+                  ? "Cafetería"
+                  : place.types?.includes("bar")
+                  ? "Bar"
+                  : place.types?.includes("bakery")
+                  ? "Panadería"
+                  : place.types?.includes("gym")
+                  ? "Gym"
+                  : place.types?.includes("pharmacy")
+                  ? "Farmacia"
+                  : place.types?.includes("hospital")
+                  ? "Hospital"
+                  : place.types?.includes("lodging")
+                  ? "Hotel"
+                  : place.types?.includes("shopping_mall")
+                  ? "Tienda"
+                  : "Negocio",
+
+              ciudad: "Santo Domingo",
+              direccion: place.formatted_address || "",
+              telefono: "",
+              website: "",
+              googleRating: place.rating || 0,
+              googleReviews: place.user_ratings_total || 0,
+              googlePlaceId: place.place_id || "",
+              photoReference:
+                place.photos?.[0]?.photo_reference ||
+                place.photos?.[0]?.name ||
+                "",
+            },
+          });
+
+          imported++;
+        }
       }
     }
 
     return NextResponse.json({
       success: true,
       imported,
-      total: data.results.length,
     });
 
   } catch (error) {
