@@ -26,13 +26,6 @@ export default function BusinessCard({
   photoReference,
 }: BusinessCardProps) {
 
-  const fallbackImages = [
-  "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1200&auto=format&fit=crop",
-];
-
-const photoUrl =
   const categoryImages: Record<string, string> = {
   Restaurante:
     "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
@@ -62,6 +55,9 @@ const photoUrl =
 const photoUrl =
   categoryImages[categoria] ||
   "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop";
+
+const photoUrl =
+  fallbackImages[id % fallbackImages.length];
 
   return (
 
