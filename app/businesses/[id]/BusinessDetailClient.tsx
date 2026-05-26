@@ -9,7 +9,16 @@ type Review = {
   calificacion: number;
   createdAt: string;
 };
-
+type Business = {
+  id: number;
+  nombre: string;
+  categoria: string;
+  ciudad: string;
+  direccion: string;
+  googleRating?: number;
+  googleReviews?: number;
+  photoReference?: string;
+};
 export default function BusinessDetailClient({
   params,
 }: {
@@ -24,9 +33,33 @@ export default function BusinessDetailClient({
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [business, setBusiness] = useState<Business | null>(null);
   const [error, setError] = useState(false);
 
   // 🔹 Cargar reseñas
+  useEffect(() => {
+  if (!businessId || isNaN(businessId)) return;
+
+  const cargarNegocio = async () => {
+    try {
+
+      const res = await fetch(`/api/businesses/${businessId}`);
+
+      if (!res.ok) {
+        throw new Error("Error cargando negocio");
+      }
+
+      const data = await res.json();
+
+      setBusiness(data);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  cargarNegocio();
+}, [businessId]);
   useEffect(() => {
     if (!businessId || isNaN(businessId)) return;
 
@@ -96,14 +129,73 @@ export default function BusinessDetailClient({
 
   return (
     <main className="min-h-screen bg-gray-50 px-6 md:px-10 py-14">
+      {business?.photoReference && (
+
+  <div className="max-w-5xl mx-auto mb-10 overflow-hidden rounded-3xl shadow-lg">
+
+    <img
+      src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photo_reference=${business.photoReference}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}
+      alt={business.nombre}
+      className="w-full h-[420px] object-cover"
+    />
+
+  </div>
+
+)}
 
       {/* HEADER */}
       <div className="max-w-4xl mx-auto bg-white rounded-2xl p-10 shadow-sm border border-gray-100 mb-10">
 
         <h1 className="text-4xl font-semibold text-[#0F172A] mb-6">
-          Restaurante El Buen Sabor
+          {business?.nombre || "Cargando negocio..."}
         </h1>
+        <p className="text-gray-500 mb-5">
+  📍 {business?.direccion}
+</p>
+<div className="flex flex-wrap gap-4 mb-6">
+<a
+  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    business?.direccion || ""
+  )}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-block bg-[#0F172A] text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition"
+>
+  Ver en Google Maps
+  
+</a>
+  {business?.categoria && (
+    <span className="bg-blue-50 text-[#3F7FD8] px-4 py-2 rounded-full text-sm font-medium">
+      {business.categoria}
+    </span>
+  )}
 
+  {business?.googleRating && (
+    <span className="bg-yellow-50 text-yellow-700 px-4 py-2 rounded-full text-sm font-medium">
+      ★ {business.googleRating.toFixed(1)} Google Rating
+    </span>
+  )}
+
+  {business?.googleReviews && (
+    <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium">
+      {business.googleReviews} Google Reviews
+    </span>
+  )}
+<div className="mt-8 border-t border-gray-200 pt-6">
+
+  <p className="text-gray-600 mb-4">
+    ¿Eres dueño o administrador de este negocio?
+  </p>
+
+  <a
+    href={`mailto:contacto@fkreview.com?subject=Reclamar negocio - ${business?.nombre}`}
+    className="inline-block bg-[#3F7FD8] text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition"
+  >
+    Reclamar Negocio
+  </a>
+
+</div>
+</div>
         <div className="flex items-center gap-4">
           <div className="flex">
             {[1,2,3,4,5].map((star) => (

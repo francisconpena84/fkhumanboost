@@ -8,16 +8,20 @@ datasource db {
 }
 
 model Business {
-  id          Int      @id @default(autoincrement())
-  nombre      String
-  categoria   String
-  ciudad      String
-  direccion   String
-  telefono    String
-  website     String
-  imageUrl    String?
-  reviews     Review[]
-  createdAt   DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  nombre          String
+  categoria       String
+  ciudad          String
+  direccion       String
+  telefono        String
+  website         String
+  imageUrl        String?
+  googleRating    Float?
+  googleReviews   Int?
+  googlePlaceId   String?
+  photoReference  String?
+  reviews         Review[]
+  createdAt       DateTime @default(now())
 }
 
 model Review {

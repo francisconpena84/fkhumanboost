@@ -31,12 +31,14 @@ export default function BusinessesClient() {
 
   // CATEGORY FROM URL
   useEffect(() => {
-    const categoriaURL = searchParams.get("categoria");
+  const categoriaURL = searchParams.get("categoria");
 
-    if (categoriaURL) {
-      setCategoriaActiva(categoriaURL);
-    }
-  }, [searchParams]);
+  if (categoriaURL) {
+    setCategoriaActiva(categoriaURL);
+  } else {
+    setCategoriaActiva("Todos");
+  }
+}, [searchParams]);
 
   // FILTERS
   const negociosFiltrados = negocios.filter((negocio) => {
@@ -169,10 +171,17 @@ export default function BusinessesClient() {
 
             return (
               <BusinessCard
-                key={negocio.id}
-                {...negocio}
-                calificacion={promedio}
-              />
+  key={negocio.id}
+  id={negocio.id}
+  nombre={negocio.nombre}
+  categoria={negocio.categoria}
+  ciudad={negocio.ciudad}
+  direccion={negocio.direccion}
+  calificacion={promedio}
+  googleRating={negocio.googleRating}
+  googleReviews={negocio.googleReviews}
+  photoReference={negocio.photoReference}
+/>
             );
           })}
 
